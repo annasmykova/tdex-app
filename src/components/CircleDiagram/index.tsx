@@ -38,12 +38,12 @@ const CircleDiagram: React.FC<CircleDiagram> = ({
 
     if (data.length) {
       data.forEach((item: any, index: number) => {
-        if (index === data.length - 1) {
-          start = length + 0.2;
-          length = (item.amount / total) * 2 * Math.PI - 0.4;
-        } else if (index === 0) {
+        if (index === 0) {
           start = 0;
           length = (item.amount / total) * 2 * Math.PI;
+        } else if (index === data.length - 1) {
+          start = length + 0.2;
+          length = (item.amount / total) * 2 * Math.PI - 0.4;
         } else {
           start = length + 0.2;
           length = (item.amount / total) * 2 * Math.PI - 0.2;

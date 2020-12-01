@@ -8000,6 +8000,11 @@ liquidjs-lib@vulpemventures/liquidjs-lib:
     varuint-bitcoin "^1.0.4"
     wif "^2.0.1"
 
+liquidjs@^9.16.1:
+  version "9.16.1"
+  resolved "https://registry.yarnpkg.com/liquidjs/-/liquidjs-9.16.1.tgz#0b2d88a2cd2144e7f9e8d169c986dd2042b05ee3"
+  integrity sha512-bo/EpbQ5u3ZIMtk4NT56wWlWi/ZQz0E/x5GB81BmrbU5Txa7Z2Ha08XYZGXTGXlW0wTWwIgDVk//oxMm35Vugw==
+
 load-json-file@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/load-json-file/-/load-json-file-1.1.0.tgz#956905708d58b4bab4c2261b04f59f31c99374c0"
@@ -12294,10 +12299,10 @@ tdex-react-scripts@^4.0.0-tdex:
   optionalDependencies:
     fsevents "^2.1.3"
 
-tdex-sdk@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/tdex-sdk/-/tdex-sdk-1.1.0.tgz#423756563694b54f98fb3adaf14aa3ecfe047330"
-  integrity sha512-BE6kOFciInMHTkjTOms5ZHJUsx1xraOS99HJDFuMoz7EoGOgTJaGsw5Iv6t2mTEVHeSxYHnlolRFYoqXR2l2Vg==
+tdex-sdk@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/tdex-sdk/-/tdex-sdk-1.2.2.tgz#f7ac3e536fa1e9dcedc148dbea10013680322ca4"
+  integrity sha512-qftKu9OLRspAScXOr5o1AbJd/gB3d5sC8ZiwP2+4wSDKtyawvi7e0H4YFoCOHX6vuzff/vuPGGrEWsDg+5rV5Q==
   dependencies:
     "@grpc/grpc-js" "^1.0.4"
     "@types/google-protobuf" "^3.7.2"

@@ -1,4 +1,4 @@
-import { Assets } from './constants';
+import { Assets, defaultPrecision } from './constants';
 
 export const getEdgeAsset = (asset_id: string) => {
   return Object.values(Assets).find((item: any) => item.assetHash === asset_id);
@@ -12,3 +12,7 @@ export const getRandomColor = () => {
   }
   return color;
 };
+
+export function fromSatoshi(x: number, y?: number): string {
+  return (x / Math.pow(10, y || defaultPrecision)).toFixed(2);
+}
