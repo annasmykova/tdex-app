@@ -1,6 +1,11 @@
 import React, { CSSProperties } from 'react';
 import LbtcIcon from '../../assets/img/lbtc.svg';
 import UsdtIcon from '../../assets/img/usdt.svg';
+import BtseIcon from '../../assets/img/btse.svg';
+import LcadIcon from '../../assets/img/lcad.svg';
+import DepositIcon from '../../assets/img/deposit.svg';
+import PlaceholderIcon from '../../assets/img/currency-placeholder.svg';
+import { TxType } from '../../utils/types';
 
 interface IconInterface {
   width?: string;
@@ -347,14 +352,40 @@ export const IconBTC = (props: IconInterface) => (
 );
 
 export const CurrencyIcon = ({ currency, ...props }: any) => {
-  switch (currency) {
-    case 'L-BTC':
+  switch (currency.toUpperCase()) {
+    case 'LBTC':
       return <img src={LbtcIcon} />;
     case 'USDT':
       return <img src={UsdtIcon} />;
     case 'LCAD':
-      return <img src="../../assets/img/lcad.png" />;
+      return <img src={LcadIcon} />;
+    case 'BTSE':
+      return <img src={BtseIcon} />;
     default:
-      return <img src={LbtcIcon} />;
+      return <img src={PlaceholderIcon} />;
   }
+};
+
+export const TxIcon = ({ type, ...props }: any) => {
+  switch (type) {
+    case TxType.Deposit:
+      return <img className="deposit" src={DepositIcon} />;
+    case TxType.Withdraw:
+      return <img className="withdraw" src={DepositIcon} />;
+    default:
+      return <img src={PlaceholderIcon} />;
+  }
+};
+
+export const SwapIcon = () => {
+  return (
+    <div className="swap-images">
+      <span className="icon-wrapper">
+        <IconBTC width="13px" height="13px"></IconBTC>
+      </span>
+      <span className="icon-wrapper with-border">
+        <IconBTC width="13px" height="13px"></IconBTC>
+      </span>
+    </div>
+  );
 };

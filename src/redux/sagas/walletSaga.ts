@@ -52,20 +52,34 @@ function* getAssetSaga({
     const coinsIds = coinsArray.reduce((a: string, b: any) => {
       return a ? `${a},${b.id}` : b.id;
     }, '');
-    const { data: coinsData } = yield call(getCoinsRequest, '/simple/price', {
+    const coinsRateOptions = {
       params: {
         ids: coinsIds.indexOf('bitcoin') < 0 ? `${coinsIds},bitcoin` : coinsIds,
         vs_currencies: currency.toLowerCase(),
       },
-    });
-    console.log(coinsData);
-    console.log(transformedAssets);
-    console.log(coinsTransformer(coinsArray, coinsData, currency));
-    yield put(setCoinsRates(coinsTransformer(coinsArray, coinsData, currency)));
+    };
+    yield call(getCoinsRatesSaga, coinsRateOptions, coinsArray, currency);
     yield put(setAssets(transformedAssets));
   } catch (e) {
     yield put(setAssets([]));
     yield put(setCoinsRates(null));
+    console.log(e);
+  }
+}
+
+function* getCoinsRatesSaga(
+  coinsRatesOptions: any,
+  coinsArray: Array<any>,
+  currency: string
+) {
+  try {
+    const { data: coinsData } = yield call(
+      getCoinsRequest,
+      '/simple/price',
+      coinsRatesOptions
+    );
+    yield put(setCoinsRates(coinsTransformer(coinsArray, coinsData, currency)));
+  } catch (e) {
     console.log(e);
   }
 }

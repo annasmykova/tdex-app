@@ -1,6 +1,10 @@
 import { defaultPrecision } from '../../utils/constants';
 import { BalanceInterface } from '../actionTypes/walletActionTypes';
-import { fromSatoshi, getEdgeAsset } from '../../utils/helpers';
+import {
+  formatPriceString,
+  fromSatoshi,
+  getEdgeAsset,
+} from '../../utils/helpers';
 
 export const assetTransformer = (assets: any, balance: BalanceInterface) => {
   return assets.map((asset: any) => {
@@ -14,6 +18,9 @@ export const assetTransformer = (assets: any, balance: BalanceInterface) => {
         precision: defaultPrecision,
         amount: balance[asset.data.asset_id],
         amountDisplay: fromSatoshi(balance[asset.data.asset_id]),
+        amountDisplayFormatted: formatPriceString(
+          fromSatoshi(balance[asset.data.asset_id])
+        ),
       };
     }
     const { asset_id, precision, name, ticker, status } = asset.data;
@@ -24,7 +31,10 @@ export const assetTransformer = (assets: any, balance: BalanceInterface) => {
       blockHash: status?.block_hash || '',
       precision: precision || defaultPrecision,
       amount: balance[asset_id],
-      amountDisplay: fromSatoshi(balance[asset.data.asset_id], precision),
+      amountDisplay: fromSatoshi(balance[asset_id], precision),
+      amountDisplayFormatted: formatPriceString(
+        fromSatoshi(balance[asset_id], precision)
+      ),
     };
   });
 };

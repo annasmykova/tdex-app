@@ -34,18 +34,18 @@ const CircleDiagram: React.FC<CircleDiagram> = ({
     ctx.clearRect(0, 0, 240, 240);
 
     const shift = -0.5 * Math.PI;
-    let length: number, start: number;
+    let length: number, start: number, end: number;
 
     if (data.length) {
       data.forEach((item: any, index: number) => {
         if (index === 0) {
-          start = 0;
+          start = shift + 0.1;
           length = (item.amount / total) * 2 * Math.PI;
         } else if (index === data.length - 1) {
-          start = length + 0.2;
+          start = start + length + 0.2;
           length = (item.amount / total) * 2 * Math.PI - 0.4;
         } else {
-          start = length + 0.2;
+          start = start + length + 0.2;
           length = (item.amount / total) * 2 * Math.PI - 0.2;
         }
         const grad = ctx.createLinearGradient(100, 0, 200, 200);
@@ -58,9 +58,15 @@ const CircleDiagram: React.FC<CircleDiagram> = ({
           grad.addColorStop(0, rdmColor);
           grad.addColorStop(1, rdmColor);
         }
+        length = length < 0 ? 0.0125 : length;
+        end =
+          start + length > 2 * Math.PI + shift
+            ? 2 * Math.PI + shift - 0.1
+            : start + length;
+
         if (length > 0) {
           ctx.beginPath();
-          ctx.arc(120, 120, 110, start + shift, start + length + shift);
+          ctx.arc(120, 120, 110, start, end);
           ctx.lineWidth = 17;
           ctx.lineCap = 'round';
           ctx.strokeStyle = grad;

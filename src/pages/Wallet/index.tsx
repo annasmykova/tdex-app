@@ -30,13 +30,17 @@ import {
 import { explorerUrl } from '../../redux/services/walletService';
 import { CurrencyIcon } from '../../components/icons';
 import { mainAssets } from '../../utils/constants';
+import { formatPriceString, getCoinsEquivalent } from '../../utils/helpers';
 
 interface TransformedAssetsInterface {
   [key: string]: Array<any>;
 }
 
 interface WalletTotalInterface {
-  [currencyKey: string]: string;
+  [currencyKey: string]: {
+    amount: string;
+    priceFormat: string;
+  };
 }
 
 interface DiagramInterface {
@@ -63,8 +67,8 @@ const Wallet: React.FC<any> = ({ history }) => {
   const dispatch = useDispatch();
   const [balances, setBalances] = useState();
   const [total, setTotal] = useState<WalletTotalInterface>({
-    lbtc: '0,00',
-    eur: '0,00',
+    lbtc: { amount: '0,00', priceFormat: '0.00' },
+    eur: { amount: '0,00', priceFormat: '0.00' },
   });
   const [transformedAssets, setTransformedAssets] = useState<
     TransformedAssetsInterface
@@ -134,11 +138,18 @@ const Wallet: React.FC<any> = ({ history }) => {
           (assetItem: any) => assetItem.ticker.toLowerCase() === item
         );
         if (asset) {
-          const priceEquivalent = getCoinsEquivalent(asset);
+          const priceEquivalent = getCoinsEquivalent(
+            asset,
+            coinsRates,
+            asset.amountDisplay,
+            currency
+          );
           totalAmount += Number(priceEquivalent);
           assetsObject.mainAssets.push({
             ...asset,
-            priceEquivalent,
+            priceEquivalent: priceEquivalent
+              ? formatPriceString(priceEquivalent)
+              : priceEquivalent,
           });
           if (priceEquivalent) {
             diagramArray.push({
@@ -150,20 +161,39 @@ const Wallet: React.FC<any> = ({ history }) => {
       });
       assets.forEach((asset: any) => {
         if (!mainAssets.includes(asset.ticker.toLowerCase())) {
-          const priceEquivalent = getCoinsEquivalent(asset);
+          const priceEquivalent = getCoinsEquivalent(
+            asset,
+            coinsRates,
+            asset.amountDisplay,
+            currency
+          );
           totalAmount += Number(priceEquivalent);
           assetsObject.otherAssets.push({
             ...asset,
-            priceEquivalent,
+            priceEquivalent: priceEquivalent
+              ? formatPriceString(priceEquivalent)
+              : priceEquivalent,
           });
+          if (priceEquivalent) {
+            diagramArray.push({
+              type: asset.ticker.toUpperCase(),
+              amount: Number(priceEquivalent),
+            });
+          }
         }
       });
       setTransformedAssets(assetsObject);
-      console.log(coinsRates.lbtc.rate[currency]);
-      console.log(totalAmount);
       setTotal({
-        lbtc: (totalAmount / coinsRates.lbtc.rate[currency]).toFixed(2),
-        [currency]: totalAmount.toString(),
+        lbtc: {
+          amount: (totalAmount / coinsRates.lbtc.rate[currency]).toFixed(2),
+          priceFormat: formatPriceString(
+            (totalAmount / coinsRates.lbtc.rate[currency]).toFixed(2)
+          ),
+        },
+        [currency]: {
+          amount: totalAmount.toFixed(2),
+          priceFormat: formatPriceString(totalAmount.toFixed(2)),
+        },
       });
       if (diagramArray.length) {
         setDiagramData(diagramArray);
@@ -183,21 +213,11 @@ const Wallet: React.FC<any> = ({ history }) => {
       ).then((res: any) => {
         setBalances(res);
         dispatch(getAssets(res));
-        console.log(balances);
         return res;
       });
     } catch (e) {
       console.log(e);
     }
-  };
-
-  const getCoinsEquivalent = (asset: any) => {
-    return coinsRates[asset.ticker.toLowerCase()]
-      ? (
-          Number(asset.amountDisplay) *
-          coinsRates[asset.ticker.toLowerCase()].rate[currency]
-        ).toFixed(2)
-      : false;
   };
 
   return (
@@ -212,33 +232,33 @@ const Wallet: React.FC<any> = ({ history }) => {
             <div className="header-info wallet">
               <p className="info-heading">Total balance</p>
               <p className="info-amount">
-                {total?.lbtc}
+                {total?.lbtc.priceFormat}
                 <span>LBTC</span>
               </p>
               <p className="info-amount-converted">
-                {total ? total[currency] : ''} {currency.toUpperCase()}
+                {total ? total[currency].priceFormat : ''}{' '}
+                {currency.toUpperCase()}
               </p>
             </div>
             <CircleDiagram
               className="diagram"
               data={diagramData}
-              total={Number(total ? total[currency] : '')}
+              total={Number(total ? total[currency].amount : '')}
             />
           </div>
         </IonHeader>
         <IonList>
-          {transformedAssets.otherAssets.length ? (
+          {transformedAssets.mainAssets.length ? (
             <IonListHeader>Asset list</IonListHeader>
           ) : (
             ''
           )}
           {transformedAssets.mainAssets?.map((asset: any) => {
-            const equivalent = getCoinsEquivalent(asset);
             return (
               <IonItem
                 key={asset.asset_id}
                 onClick={() => {
-                  history.push('/operations');
+                  history.push(`/operations/${asset.asset_id}`);
                 }}
               >
                 <div className="item-main-info">
@@ -250,16 +270,16 @@ const Wallet: React.FC<any> = ({ history }) => {
                   </div>
                   <div className="item-end">
                     <div className="first-col">
-                      <div className="main-row">{asset.amountDisplay}</div>
-                      {equivalent && (
-                        <div className="sub-row">
-                          {getCoinsEquivalent(asset)}
-                        </div>
+                      <div className="main-row">
+                        {asset.amountDisplayFormatted}
+                      </div>
+                      {asset.priceEquivalent && (
+                        <div className="sub-row">{asset.priceEquivalent}</div>
                       )}
                     </div>
                     <div className="second-col">
                       <div className="main-row accent">{asset.ticker}</div>
-                      {equivalent && (
+                      {asset.priceEquivalent && (
                         <div className="sub-row">{currency.toUpperCase()}</div>
                       )}
                     </div>
@@ -274,12 +294,11 @@ const Wallet: React.FC<any> = ({ history }) => {
             ''
           )}
           {transformedAssets.otherAssets?.map((asset: any) => {
-            const equivalent = getCoinsEquivalent(asset);
             return (
               <IonItem
                 key={asset.asset_id}
                 onClick={() => {
-                  history.push('/operations');
+                  history.push(`/operations/${asset.asset_id}`);
                 }}
               >
                 <div className="item-main-info">
@@ -291,16 +310,16 @@ const Wallet: React.FC<any> = ({ history }) => {
                   </div>
                   <div className="item-end">
                     <div className="first-col">
-                      <div className="main-row">{asset.amountDisplay}</div>
-                      {equivalent && (
-                        <div className="sub-row">
-                          {getCoinsEquivalent(asset)}
-                        </div>
+                      <div className="main-row">
+                        {asset.amountDisplayFormatted}
+                      </div>
+                      {asset.priceEquivalent && (
+                        <div className="sub-row">{asset.priceEquivalent}</div>
                       )}
                     </div>
                     <div className="second-col">
                       <div className="main-row accent">{asset.ticker}</div>
-                      {equivalent && (
+                      {asset.priceEquivalent && (
                         <div className="sub-row">{currency.toUpperCase()}</div>
                       )}
                     </div>

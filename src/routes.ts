@@ -20,7 +20,7 @@ export const routerLinks = {
   withdrawal: '/withdraw',
   recieve: '/recieve',
   qrScanner: '/qrscanner',
-  operations: '/operations',
+  operations: '/operations/:asset_id',
   withdrawalDetails: '/withdrawaldetails',
   account: '/account',
 };

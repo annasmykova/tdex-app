@@ -110,6 +110,8 @@ ion-list-header {
           display: flex;
           flex-direction: row;
           align-items: flex-end;
+          justify-content: flex-end;
+
           .main-row {
             font-family: $sub-heading-font;
 
@@ -177,11 +179,25 @@ ion-list-header {
         ion-text {
           overflow-wrap: break-word;
           word-wrap: break-word;
-          hyphens: auto;
+          hyphens: none;
           max-width: 250px;
           margin-left: 6px;
         }
       }
     }
+  }
+}
+
+.ta-end {
+  text-align: end;
+}
+
+.status-text {
+  text-transform: uppercase;
+  &.confirmed {
+    color: $light-green-color;
+  }
+  &.pending {
+    color: $pending-color;
   }
 }
